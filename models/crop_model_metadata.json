@@ -1,0 +1,37 @@
+{
+  "model_type": "RandomForestClassifier",
+  "n_estimators": 300,
+  "random_state": 42,
+  "features": [
+    "N",
+    "P",
+    "K",
+    "temperature",
+    "humidity",
+    "ph",
+    "rainfall"
+  ],
+  "classes": [
+    "apple",
+    "bell_pepper",
+    "cherry",
+    "grapes",
+    "maize",
+    "peach",
+    "potato",
+    "strawberry",
+    "tomato"
+  ],
+  "test_accuracy": 0.7111,
+  "train_rows": 7650,
+  "test_rows": 1350,
+  "feature_importances": {
+    "N": 0.2007,
+    "P": 0.1445,
+    "K": 0.2143,
+    "temperature": 0.1486,
+    "humidity": 0.098,
+    "ph": 0.1011,
+    "rainfall": 0.0928
+  }
+}

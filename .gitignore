@@ -1,0 +1,48 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Environments
+.venv/
+venv/
+env/
+ENV/
+backend/.venv/
+
+# Node
+node_modules/
+frontend/node_modules/
+frontend/dist/
+frontend/.vite/
+dist/
+.vite/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Environment variables & secrets
+.env
+.env.local
+.env.*.local
+backend/.env
+
+# Model artifacts (excluded per preference; generated via train_crop_model.py)
+models/crop_model.pkl
+
+# Large raw image dataset (keep crop_recommendation_10000.csv)
+Plant Village Dataset/Test/
+Plant Village Dataset/Train/
+Plant Village Dataset/Val/
+
+# Operating System & IDE
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+*.swp
+*.swo

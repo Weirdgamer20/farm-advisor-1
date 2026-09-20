@@ -1,0 +1,83 @@
+{
+  "model_type": "crop_conditioned_soil_suitability_regressor",
+  "description": "Predicts a 0-100 soil/environment suitability score for a specified crop. The target scores are derived from crop-specific distributions in the provided CSV because the CSV contains no real soil_condition label.",
+  "features": [
+    "N",
+    "P",
+    "K",
+    "temperature",
+    "humidity",
+    "ph",
+    "rainfall"
+  ],
+  "resolved_csv_features": [
+    "N",
+    "P",
+    "K",
+    "temperature",
+    "humidity",
+    "ph",
+    "rainfall"
+  ],
+  "crop_column": "crop",
+  "crop_classes": [
+    "apple",
+    "bell_pepper",
+    "cherry",
+    "grapes",
+    "maize",
+    "peach",
+    "potato",
+    "strawberry",
+    "tomato"
+  ],
+  "crop_to_index": {
+    "apple": 0,
+    "bell_pepper": 1,
+    "cherry": 2,
+    "grapes": 3,
+    "maize": 4,
+    "peach": 5,
+    "potato": 6,
+    "strawberry": 7,
+    "tomato": 8
+  },
+  "numeric_feature_count": 7,
+  "crop_feature_count": 9,
+  "input_feature_count": 16,
+  "scaler_mean": [
+    75.14169719014849,
+    57.65322538390992,
+    84.02570929572695,
+    21.31997430332123,
+    66.68634582610358,
+    6.171107728065007,
+    92.41914632964702
+  ],
+  "scaler_scale": [
+    34.39950656685134,
+    27.012905522825168,
+    34.01458180170928,
+    4.522425983658195,
+    11.231380396303903,
+    0.4826584688085048,
+    30.719894278597216
+  ],
+  "score_range": [
+    0.0,
+    100.0
+  ],
+  "status_thresholds": {
+    "good": 80.0,
+    "acceptable": 60.0,
+    "needs_attention": 40.0
+  },
+  "test_loss": 1.7661961317062378,
+  "test_mae": 2.2174458503723145,
+  "test_rmse": 2.8279015047060256,
+  "prediction_target_correlation": 0.9733946558068223,
+  "random_state": 42,
+  "training_rows": 6300,
+  "validation_rows": 1350,
+  "test_rows": 1350
+}
