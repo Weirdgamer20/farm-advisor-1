@@ -49,6 +49,21 @@ jobs:
           print('Backend health check passed:', data)
           PY
 
+      - name: Verify disease image upload and inference
+        run: |
+          echo 'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNk+A8AAQUBAScY42YAAAAASUVORK5CYII=' | base64 -d > /tmp/test.png
+          curl -fsS -X POST             -F 'image=@/tmp/test.png;type=image/png'             http://127.0.0.1:8000/api/v1/disease/predict > /tmp/disease.json
+          cat /tmp/disease.json
+          python - <<'PY'
+          import json
+          with open('/tmp/disease.json', encoding='utf-8') as f:
+              data = json.load(f)
+          for key in ('request_id', 'disease', 'confidence', 'is_healthy', 'status'):
+              assert key in data, data
+          assert 0 <= float(data['confidence']) <= 1, data
+          print('Disease inference smoke test passed.')
+          PY
+
       - name: Cleanup
         if: always()
         run: docker rm -f farmai-backend || true
