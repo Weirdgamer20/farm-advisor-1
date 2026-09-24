@@ -1,0 +1,54 @@
+name: Backend Docker Smoke Test
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'backend/**'
+      - 'models/**'
+      - 'Dockerfile'
+      - '.github/workflows/backend-ci.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  docker-smoke:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Build backend image
+        run: docker build -t farmai-backend .
+
+      - name: Start backend
+        run: |
+          docker run -d --name farmai-backend -p 8000:8000 farmai-backend
+          for i in {1..60}; do
+            if curl -fsS http://127.0.0.1:8000/api/v1/health > /tmp/health.json; then
+              cat /tmp/health.json
+              exit 0
+            fi
+            sleep 5
+          done
+          docker logs farmai-backend
+          exit 1
+
+      - name: Verify all models loaded
+        run: |
+          python - <<'PY'
+          import json
+          with open('/tmp/health.json', encoding='utf-8') as f:
+              data = json.load(f)
+          assert data['status'] == 'healthy', data
+          assert all(data['models'].values()), data
+          print('Backend health check passed:', data)
+          PY
+
+      - name: Cleanup
+        if: always()
+        run: docker rm -f farmai-backend || true
