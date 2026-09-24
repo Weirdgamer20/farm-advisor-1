@@ -1,9 +1,9 @@
 /**
  * Typed API client for the Farmer Crop Advisory backend.
- * All requests go through Vite's dev proxy (/api → localhost:8000).
+ * Local development uses Vite's /api proxy; production uses VITE_API_URL.
  */
 
-const BASE = '/api/v1'
+const BASE = `${import.meta.env.VITE_API_URL || '/api'}/v1`
 
 export interface AdvisoryRequest {
   latitude: number
