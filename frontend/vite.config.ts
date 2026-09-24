@@ -1,7 +1,8 @@
-﻿import { defineConfig } from 'vite'
+import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 
 export default defineConfig({
+  base: '/farm-advisor-1/',
   plugins: [react()],
   server: {
     host: '0.0.0.0',
