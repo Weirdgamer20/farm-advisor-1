@@ -31,8 +31,6 @@ yarn-error.log*
 .env.*.local
 backend/.env
 
-# Model artifacts (excluded per preference; generated via train_crop_model.py)
-models/crop_model.pkl
 
 # Large raw image dataset (keep crop_recommendation_10000.csv)
 Plant Village Dataset/Test/

@@ -11,6 +11,7 @@ import pickle
 from pathlib import Path
 from typing import Any
 
+import joblib
 import numpy as np
 
 logger = logging.getLogger(__name__)
@@ -58,8 +59,7 @@ class CropModel:
                 "Please run: python backend/scripts/train_crop_model.py"
             )
 
-        with open(rf_path, "rb") as f:
-            self._rf = pickle.load(f)
+        self._rf = joblib.load(rf_path)
         with open(le_path, "rb") as f:
             self._le = pickle.load(f)
         with open(sc_path, "rb") as f:

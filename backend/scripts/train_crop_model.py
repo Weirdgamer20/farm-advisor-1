@@ -18,6 +18,8 @@ import pickle
 import sys
 from pathlib import Path
 
+import joblib
+
 import numpy as np
 import pandas as pd
 from sklearn.ensemble import RandomForestClassifier
@@ -98,8 +100,7 @@ def main() -> None:
     # ── Save artifacts ────────────────────────────────────────────────────────
     MODEL_DIR.mkdir(parents=True, exist_ok=True)
 
-    with open(MODEL_DIR / "crop_model.pkl", "wb") as f:
-        pickle.dump(rf, f)
+    joblib.dump(rf, MODEL_DIR / "crop_model.pkl", compress=3)
     with open(MODEL_DIR / "label_encoder.pkl", "wb") as f:
         pickle.dump(le, f)
     with open(MODEL_DIR / "feature_scaler.pkl", "wb") as f:
