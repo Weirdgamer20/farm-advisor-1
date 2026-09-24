@@ -1,7 +1,6 @@
 """Application configuration using Pydantic Settings."""
 from __future__ import annotations
 
-import os
 from pathlib import Path
 
 from pydantic_settings import BaseSettings, SettingsConfigDict
@@ -18,7 +17,11 @@ class Settings(BaseSettings):
     model_dir: Path = Path(__file__).parent.parent.parent / "models"
 
     # CORS
-    allowed_origins: str = "http://localhost:5173,http://127.0.0.1:5173"
+    allowed_origins: str = (
+        "http://localhost:5173,"
+        "http://127.0.0.1:5173,"
+        "https://weirdgamer20.github.io"
+    )
 
     # Rate limiting
     rate_limit_per_minute: int = 60
@@ -29,7 +32,7 @@ class Settings(BaseSettings):
     openai_api_key: str = ""
 
     # Image upload limits
-    max_image_bytes: int = 10 * 1024 * 1024  # 10 MB
+    max_image_bytes: int = 10 * 1024 * 1024
     allowed_image_mimes: list[str] = ["image/jpeg", "image/png", "image/webp"]
 
     @property
