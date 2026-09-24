@@ -1,9 +1,9 @@
-import { useState, useCallback } from 'react'
+﻿import { useState, useCallback } from 'react'
 
 export type GeoState =
   | { status: 'idle' }
   | { status: 'loading' }
-  | { status: 'success'; latitude: number; longitude: number }
+  | { status: 'success'; latitude: number; longitude: number; source?: 'gps' | 'ip' | 'preset' }
   | { status: 'error'; message: string }
 
 export function useGeolocation() {
@@ -11,29 +11,71 @@ export function useGeolocation() {
 
   const request = useCallback(() => {
     if (!navigator.geolocation) {
-      setState({ status: 'error', message: 'Geolocation is not supported by your browser.' })
+      // Try IP lookup fallback
+      fallbackToIp('Geolocation is not supported by your browser.')
       return
     }
+
     setState({ status: 'loading' })
+
     navigator.geolocation.getCurrentPosition(
       (pos) => {
         setState({
           status: 'success',
           latitude: pos.coords.latitude,
           longitude: pos.coords.longitude,
+          source: 'gps',
         })
       },
-      (err) => {
+      async (err) => {
         const msgs: Record<number, string> = {
-          1: 'Location permission was denied. Please allow location access and try again.',
-          2: 'Location information is unavailable. Please check your device settings.',
-          3: 'Location request timed out. Please try again.',
+          1: 'Location permission was denied in your browser.',
+          2: 'Location information is unavailable on your device.',
+          3: 'Location request timed out.',
         }
-        setState({ status: 'error', message: msgs[err.code] ?? 'An unknown location error occurred.' })
+        const reason = msgs[err.code] ?? 'Unable to retrieve location.'
+        // Automatically try IP-based geolocation fallback so farmer is not blocked
+        await fallbackToIp(reason)
       },
-      { timeout: 10000, maximumAge: 30000 },
+      { timeout: 7000, maximumAge: 60000, enableHighAccuracy: false },
     )
   }, [])
 
-  return { state, request }
+  const setManualLocation = useCallback((latitude: number, longitude: number) => {
+    setState({
+      status: 'success',
+      latitude,
+      longitude,
+      source: 'preset',
+    })
+  }, [])
+
+  async function fallbackToIp(previousErrorMsg: string) {
+    try {
+      const res = await fetch('https://get.geojs.io/v1/ip/geo.json')
+      if (res.ok) {
+        const data = await res.json()
+        const lat = parseFloat(data.latitude)
+        const lon = parseFloat(data.longitude)
+        if (!isNaN(lat) && !isNaN(lon)) {
+          setState({
+            status: 'success',
+            latitude: lat,
+            longitude: lon,
+            source: 'ip',
+          })
+          return
+        }
+      }
+    } catch {
+      // Ignore network errors on IP fallback
+    }
+
+    setState({
+      status: 'error',
+      message: `${previousErrorMsg} You can allow location access in your browser or continue with manual coordinates.`,
+    })
+  }
+
+  return { state, request, setManualLocation }
 }

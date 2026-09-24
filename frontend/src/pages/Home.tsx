@@ -1,9 +1,9 @@
-import { useNavigate } from 'react-router-dom'
-import { MapPin, Leaf, Microscope, Bot, ChevronRight, AlertCircle, Loader2, Sprout } from 'lucide-react'
+﻿import { useNavigate } from 'react-router-dom'
+import { MapPin, Leaf, Microscope, Bot, ChevronRight, AlertCircle, Loader2, Sprout, Globe, Navigation } from 'lucide-react'
 import { useGeolocation } from '../hooks/useGeolocation'
 
 export default function Home() {
-  const { state, request } = useGeolocation()
+  const { state, request, setManualLocation } = useGeolocation()
   const navigate = useNavigate()
 
   const handleContinue = () => {
@@ -12,6 +12,12 @@ export default function Home() {
         state: { latitude: state.latitude, longitude: state.longitude },
       })
     }
+  }
+
+  const handleManualSkip = (lat = 18.5204, lon = 73.8567) => {
+    navigate('/advisory', {
+      state: { latitude: lat, longitude: lon },
+    })
   }
 
   const steps = [
@@ -52,53 +58,92 @@ export default function Home() {
           </p>
 
           {/* GPS CTA */}
-          <div className="glass-card max-w-sm mx-auto p-6 text-left">
-            <p className="text-sm text-gray-400 mb-4 flex items-center gap-2">
-              <MapPin className="w-4 h-4 text-forest-400" />
-              Step 1 — Allow location access
+          <div className="glass-card max-w-sm mx-auto p-6 text-left shadow-2xl">
+            <p className="text-sm text-gray-400 mb-4 flex items-center justify-between">
+              <span className="flex items-center gap-2">
+                <MapPin className="w-4 h-4 text-forest-400" />
+                Step 1 — Farm Location
+              </span>
             </p>
 
             {state.status === 'idle' && (
-              <button id="gps-request-btn" onClick={request} className="btn-primary w-full">
-                <MapPin className="w-4 h-4 inline mr-2" />
-                Share My Location
-              </button>
+              <div className="space-y-3">
+                <button id="gps-request-btn" onClick={request} className="btn-primary w-full flex items-center justify-center gap-2">
+                  <Navigation className="w-4 h-4" />
+                  Allow & Share GPS Location
+                </button>
+                <div className="relative flex py-1 items-center">
+                  <div className="flex-grow border-t border-dark-600"></div>
+                  <span className="flex-shrink mx-2 text-[11px] text-gray-500 uppercase tracking-wider">or</span>
+                  <div className="flex-grow border-t border-dark-600"></div>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => handleManualSkip(18.5204, 73.8567)}
+                  className="w-full text-xs text-gray-400 hover:text-forest-300 transition py-2 px-3 rounded-lg border border-dark-600 hover:border-forest-700/50 bg-dark-800/60 flex items-center justify-center gap-1.5"
+                >
+                  <Globe className="w-3.5 h-3.5" />
+                  Continue without GPS (Set Manually)
+                </button>
+              </div>
             )}
 
             {state.status === 'loading' && (
-              <div className="flex items-center gap-3 text-gray-400">
-                <Loader2 className="w-5 h-5 animate-spin text-forest-400" />
-                Requesting location…
+              <div className="flex flex-col items-center justify-center py-4 gap-3 text-gray-300 text-sm">
+                <Loader2 className="w-6 h-6 animate-spin text-forest-400" />
+                <span>Requesting browser permission…</span>
+                <span className="text-xs text-gray-500 text-center">Please click &quot;Allow&quot; in the browser prompt</span>
               </div>
             )}
 
             {state.status === 'error' && (
               <div className="space-y-3">
-                <div className="flex items-start gap-2 text-red-400 text-sm">
-                  <AlertCircle className="w-4 h-4 mt-0.5 flex-shrink-0" />
-                  {state.message}
+                <div className="flex items-start gap-2 text-amber-400/90 text-xs bg-amber-950/30 p-3 rounded-lg border border-amber-800/40">
+                  <AlertCircle className="w-4 h-4 mt-0.5 flex-shrink-0 text-amber-400" />
+                  <div>
+                    <p className="font-medium text-amber-300 mb-1">Location permission not granted</p>
+                    <p className="text-gray-300 text-[11px] leading-relaxed">
+                      To enable GPS: Click the 🔒 lock/tune icon next to the URL in your address bar, set <strong>Location</strong> to <strong>Allow</strong>, and refresh.
+                    </p>
+                  </div>
                 </div>
-                <button onClick={request} className="btn-secondary w-full text-sm">
-                  Try Again
-                </button>
+
+                <div className="grid grid-cols-2 gap-2">
+                  <button onClick={request} className="btn-secondary text-xs py-2">
+                    Try GPS Again
+                  </button>
+                  <button
+                    onClick={() => handleManualSkip(18.5204, 73.8567)}
+                    className="btn-primary text-xs py-2"
+                  >
+                    Enter Manually →
+                  </button>
+                </div>
               </div>
             )}
 
             {state.status === 'success' && (
               <div className="space-y-3">
-                <div className="flex items-center gap-2 text-forest-400 text-sm">
-                  <div className="w-2 h-2 rounded-full bg-forest-400 animate-pulse" />
-                  Location captured ✓
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2 text-forest-400 text-sm font-medium">
+                    <div className="w-2 h-2 rounded-full bg-forest-400 animate-pulse" />
+                    Location captured ✓
+                  </div>
+                  {state.source && (
+                    <span className="text-[10px] px-2 py-0.5 rounded-full bg-forest-900/80 text-forest-300 border border-forest-700/50 uppercase">
+                      {state.source}
+                    </span>
+                  )}
                 </div>
-                <p className="text-xs text-gray-500">
-                  {state.latitude.toFixed(5)}°N, {state.longitude.toFixed(5)}°E
+                <p className="text-xs text-gray-400 font-mono bg-dark-900/60 p-2 rounded-lg border border-dark-600">
+                  {state.latitude.toFixed(4)}°N, {state.longitude.toFixed(4)}°E
                 </p>
                 <button
                   id="continue-to-advisory"
                   onClick={handleContinue}
                   className="btn-primary w-full flex items-center justify-center gap-2"
                 >
-                  Get My Crop Advisory
+                  Continue to Crop Advisory
                   <ChevronRight className="w-4 h-4" />
                 </button>
               </div>
